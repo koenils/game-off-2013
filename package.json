@@ -1,0 +1,20 @@
+{
+  "name": "game-off-2013",
+  "version": "0.0.0",
+  "description": "",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/koenils/game-off-2013.git"
+  },
+  "author": [
+    "Koen Bollen <meneer@koenbollen.nl>",
+    "Nils Dijk <me@thanod.nl>"
+  ],
+  "bugs": {
+    "url": "https://github.com/koenils/game-off-2013/issues"
+  },
+  "devDependencies": {
+    "requirejs": "~2.1.9",
+    "reload": "~0.1.0"
+  }
+}
