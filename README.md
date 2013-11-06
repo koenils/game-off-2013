@@ -1,13 +1,12 @@
-
 Run in development:
 -------------------
 
- $ npm install
- $ npm install -g reload
- $ reload -b
+    $ npm install
+    $ npm install -g reload
+    $ reload -b
 
 Build for deployment:
 ---------------------
 
- $ npm install -g requirejs
- $ r.js -o build.js
+    $ npm install -g requirejs
+    $ r.js -o build.js
