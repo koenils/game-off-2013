@@ -1,9 +1,7 @@
 ({
     baseUrl: "js/",
-    paths: {
-      requireLib: "../node_modules/requirejs/require",
-    },
-    include: ["requireLib"],
-    name: "main",
-    out: "main-min.js"
+    name: "../node_modules/almond/almond",
+    include: "main",
+    out: "main-min.js",
+    wrap: true
 })

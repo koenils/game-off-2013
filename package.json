@@ -15,6 +15,7 @@
   },
   "devDependencies": {
     "requirejs": "~2.1.9",
-    "reload": "~0.1.0"
+    "reload": "~0.1.0",
+    "almond": "~0.2.6"
   }
 }
