@@ -1,9 +1,10 @@
+define(['math'], function(math) {
 
-define({
+return {
+  position: new math.Vec2(100,100),
 
-  x: 100, y: 100,
 
-  init: function(game) {
+  init: function(game, parent) {
     this.game = game;
 
     this.width = game.renderinfo.tilesize * .4;
@@ -13,13 +14,14 @@ define({
     delete this.init;
   },
 
-
   update: function(elapsed) {
   },
 
   render: function(info) {
     info.ctx.fillStyle = 'indigo';
-    info.ctx.fillRect(this.x-this.width/2, this.y-this.height/2, this.width, this.height);
+    info.ctx.fillRect(this.position.x-this.width/2, this.position.y-this.height/2, this.width, this.height);
   },
 
-});
+};
+
+}); // end define
