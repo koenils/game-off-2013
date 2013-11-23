@@ -9,6 +9,20 @@ return {
 
   init: function(game, parent) {
     this.parent = parent;
+    this.initiates = [];
+
+    var parent = this.parent;
+    for( var i = 0; i < parent.childs.length; i++ ) {
+      var child = parent.childs[i];
+      if(child.position !== undefined && child.shape !== undefined) {
+        if( child.initiateCollision ) {
+          this.initiates.push( child );
+        }
+      }
+    }
+  },
+
+  addedChild: function( child ) {
   },
 
   update: function update(elapsed) {
@@ -24,9 +38,19 @@ return {
         if(e.position !== undefined && e.velocity !== undefined) {
           e.position.x += e.velocity.x * subElapsed;
           e.position.y += e.velocity.y * subElapsed;
+          if(e.acceleration !== undefined) {
+            e.position.x += e.acceleration.x * subElapsed * subElapsed * .5;
+            e.position.y += e.acceleration.y * subElapsed * subElapsed * .5;
+
+            this.velocity.x += e.acceleration.x * subElapsed;
+            this.velocity.y += e.acceleration.y * subElapsed;
+          }
+
+          e.velocity.x *= Math.pow(.9, subElapsed);
+          e.velocity.y *= Math.pow(.9, subElapsed);
         }
 
-        if(e.shape !== undefined && !e.ghost && !e.destroyed) {
+        if(e.position !== undefined && e.shape !== undefined && !e.ghost && !e.destroyed) {
           this.checkCollision(e);
         }
       }
@@ -36,9 +60,9 @@ return {
 
   checkCollision: function checkCollision( e ) {
     var parent = this.parent;
-    for( var i = parent.childs.length-1; i >= 0; i-- ) {
-      if(parent.childs[i].shape !== undefined && !parent.childs[i].ghost && !parent.childs[i].destroyed) {
-        this.checkCollisionBetween(e, parent.childs[i]);
+    for( var i = this.initiates.length-1; i >= 0; i-- ) {
+      if(!this.initiates[i].ghost && !this.initiates[i].destroyed) {
+        this.checkCollisionBetween(e, this.initiates[i]);
       }
     }
   },
@@ -110,6 +134,22 @@ return {
     if(dot < 0)
       return;
     a.velocity.sub( n.scale(dot*2,{}), a.velocity );
+
+    var friction = a.friction || 0;
+    var bounce = a.bounce || 1;
+    this.applyModel(a, collision.normal, friction, bounce);
+  },
+
+  applyModel: function applyModel(a, normal, friction, bounce) {
+
+    if (friction != 0 || bounce != 1)
+    {
+      var right = normal.rightPerproduct();
+      var f = right.clone(math.Vec2.dot(a.velocity, right));
+      var b = normal.clone(math.Vec2.dot(a.velocity, normal));
+      a.velocity.x = f.x * (1 - friction) + b.x * bounce;
+      a.velocity.y = f.y * (1 - friction) + b.y * bounce;
+    }
   },
 
   checkcirclecircle: function checkcirclecircle(a,b) {
@@ -132,8 +172,36 @@ return {
     return undefined;
   },
 
-  checkcirclepolygon: function checkcirclepolygon(a,b) {
+  checkaabbaabb: function checkaabbaabb(a,b) {
+    var x = Math.abs(b.position.x - a.position.x) - a.halfSize.x - b.halfSize.x;
+    var y = Math.abs(b.position.y - a.position.y) - a.halfSize.y - b.halfSize.y;
 
+    if( x < 0 && y < 0 ) {
+      //collision!
+      var interpenetration = -Math.max(x,y);
+      var normal;
+      if( x > y ) {
+        normal = a.position.x > b.position.x ? new math.Vec2(-1,0) : new math.Vec2(1,0);
+      } else {
+        normal = a.position.y > b.position.y ? new math.Vec2(0,-1) : new math.Vec2(0,1);
+      }
+      return {
+        interpenetration: interpenetration,
+        normal: normal,
+        position: "to lazy to implement",
+      }
+    }
+    return undefined;
+  },
+  checkcircleaabb: function checkcircleaabb(a,b) {
+
+  },
+  checkaabbcircle: function checkcircleaabb(a,b) {
+    var r = this.checkcircleaabb(b,a);
+    if(r) {
+      r.normal.scale(-1, r.normal);
+    }
+    return r;
   },
 
   //render: function render(info) {

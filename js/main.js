@@ -12,6 +12,8 @@ var Game = function() {
     height: this.canvas.height,
   };
 
+  this.gravity = new math.Vec2(0,100);
+
   this.root = {
     childs: [],
 
@@ -27,6 +29,7 @@ var Game = function() {
 
   this.root.childs.push(player);
 
+/*
   this.root.childs.push({
     position: new math.Vec2(100,100),
     velocity: new math.Vec2(0,50),
@@ -38,13 +41,14 @@ var Game = function() {
     render: function(info) {
       info.ctx.beginPath();
       info.ctx.arc(this.position.x, this.position.y, this.radius, 0, 2 * Math.PI, false);
-      info.ctx.fillStyle = this.color || 'pink';
+      info.ctx.fillStyle = this.color || 'purple';
       info.ctx.fill();
     },
   });
   this.root.childs.push({
     position: new math.Vec2(100,150),
     velocity: new math.Vec2(0,0),
+    mass: 99,
     shape: 'circle',
     initiateCollision: true, // two entity can collide if one of them has this on true
     radius: 10,
@@ -78,7 +82,7 @@ var Game = function() {
       info.ctx.fillStyle = this.color || 'pink';
       info.ctx.fill();
     },
-  });
+  });*/
 
 };
 
@@ -112,14 +116,19 @@ function walk( entity, fn, reversed ) {
 
 Game.prototype.run = function run() {
 
-  var elapsed = 1/60;
+  var now = (new Date()).getTime();
+  var elapsed = (now-this.last)/1000;
+  this.last = now;
 
   walk(this.root, 'update', true, elapsed);
+  this.renderinfo.elapsed = elapsed;
   walk(this.root, 'render', false, this.renderinfo);
 
 };
 
 Game.prototype.start = function start() {
+
+  this.last = (new Date()).getTime();
 
   walk(this.root, 'init', false, this, null);
   setInterval(this.run.bind(this), 1000/60);
